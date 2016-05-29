@@ -6,4 +6,5 @@ package com.advisorapp;
 public interface API {
     String URL = "http://192.168.0.13:8090/api/";
     String AUTHENT_ROUTE = URL+"auths/token";
+    String USERS = URL+"users/";
 }

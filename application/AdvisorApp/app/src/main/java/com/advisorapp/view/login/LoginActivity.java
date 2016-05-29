@@ -17,6 +17,7 @@ import com.advisorapp.API;
 import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
 import com.advisorapp.model.User;
+import com.advisorapp.view.register.SignupActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -99,8 +100,8 @@ public class LoginActivity extends AppCompatActivity {
     @OnClick(R.id.link_signup)
     public void signUp(View v) {
         //TODO : after creating SignupActivity, decomment
-//        Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
-//        startActivityForResult(intent, REQUEST_SIGNUP);
+        Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+        startActivityForResult(intent, REQUEST_SIGNUP);
     }
 
 
