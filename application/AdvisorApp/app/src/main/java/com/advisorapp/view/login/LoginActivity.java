@@ -1,6 +1,7 @@
 package com.advisorapp.view.login;
 
 import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,8 +13,27 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.advisorapp.API;
+import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
+import com.advisorapp.model.User;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,21 +43,40 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
 
-    @BindView(R.id.input_email) EditText emailText;
-    @BindView(R.id.input_password) EditText _passwordText;
-    @BindView(R.id.btn_login) Button loginButton;
-    @BindView(R.id.link_signup) TextView signupLink;
+    @BindView(R.id.input_email)
+    EditText emailText;
+    @BindView(R.id.input_password)
+    EditText _passwordText;
+    @BindView(R.id.btn_login)
+    Button loginButton;
+    @BindView(R.id.link_signup)
+    TextView signupLink;
 
+    private RequestQueue mRequestQueue;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+        AdvisorAppApplication app = (AdvisorAppApplication) getApplication();
+        mRequestQueue = app.getmVolleyRequestQueue();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        mRequestQueue.cancelAll(this);
+        super.onStop();
     }
 
     @OnClick(R.id.btn_login)
-    public void login(View v){
+    public void login(View v) {
         Log.d(TAG, "Login");
 
         if (!validate()) {
@@ -47,32 +86,18 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton.setEnabled(false);
 
-        final MaterialDialog progressDialog = new MaterialDialog.Builder(this)
-                .title("Authenticating")
-                .content("Wait a moment please...")
-                .progress(true, 0)
-                .autoDismiss(false)
-                .cancelable(false)
-                .show();
+
 
         String email = emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
         // TODO: Implement your own authentication logic here.
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
+        new AuthentificationTask().doInBackground(email,password);
     }
 
     @OnClick(R.id.link_signup)
-    public void signUp(View v){
+    public void signUp(View v) {
         //TODO : after creating SignupActivity, decomment
 //        Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
 //        startActivityForResult(intent, REQUEST_SIGNUP);
@@ -111,6 +136,7 @@ public class LoginActivity extends AppCompatActivity {
     public boolean validate() {
         boolean valid = true;
 
+
         String email = emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
@@ -129,5 +155,56 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    private class AuthentificationTask extends AsyncTask<String, String, Boolean> {
+
+        private MaterialDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = new MaterialDialog.Builder(getApplicationContext())
+                    .title("Authenticating")
+                    .content("Wait a moment please...")
+                    .progress(true, 0)
+                    .autoDismiss(false)
+                    .cancelable(false)
+                    .show();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, API.AUTHENT_ROUTE, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Toast.makeText(LoginActivity.this, response, Toast.LENGTH_LONG).show();
+                    //TODO la response est le token de l'user, à implémenter + récupérer les données
+                }
+            },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                        }
+
+                    }) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+
+                    params.put("email", params.get(0));
+                    params.put("password", params.get(1));
+                    return params;
+                }
+            };
+            mRequestQueue.add(stringRequest);
+            return true; //todo manage en fonction token
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            progressDialog.dismiss();
+        }
     }
 }
