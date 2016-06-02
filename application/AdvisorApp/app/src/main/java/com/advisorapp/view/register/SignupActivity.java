@@ -1,7 +1,6 @@
 package com.advisorapp.view.register;
 
 
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,10 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.advisorapp.API;
+import com.advisorapp.api.API;
 import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
 import com.advisorapp.model.User;

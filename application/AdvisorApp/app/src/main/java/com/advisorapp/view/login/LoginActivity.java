@@ -1,6 +1,5 @@
 package com.advisorapp.view.login;
 
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,26 +12,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.advisorapp.API;
+import com.advisorapp.api.API;
 import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
-import com.advisorapp.model.User;
+import com.advisorapp.api.Token;
 import com.advisorapp.view.register.SignupActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +40,8 @@ import butterknife.OnClick;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
+    private Token token;
+
 
     @BindView(R.id.input_email)
     EditText emailText;
@@ -88,13 +87,12 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setEnabled(false);
 
 
-
         String email = emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
         // TODO: Implement your own authentication logic here.
 
-        new AuthentificationTask().doInBackground(email,password);
+        new AuthentificationTask().doInBackground(email, password);
     }
 
     @OnClick(R.id.link_signup)
@@ -175,37 +173,51 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... params) {
-
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, API.AUTHENT_ROUTE, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Toast.makeText(LoginActivity.this, response, Toast.LENGTH_LONG).show();
-                    //TODO la response est le token de l'user, à implémenter + récupérer les données
-                }
-            },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_LONG).show();
-                        }
-
-                    }) {
-                @Override
-                protected Map<String, String> getParams() {
-                    Map<String, String> params = new HashMap<>();
-
-                    params.put("email", params.get(0));
-                    params.put("password", params.get(1));
-                    return params;
-                }
-            };
-            mRequestQueue.add(stringRequest);
-            return true; //todo manage en fonction token
+//
+            HashMap<String, String> parametres = new HashMap<>();
+            parametres.put("email", params[0]);
+            parametres.put("password", params[1]);
+            postLogin(parametres);
+            return true; //todo manage en fonction token ?
         }
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             progressDialog.dismiss();
         }
+    }
+
+    private void postLogin(HashMap<String, String> params) {
+        JsonObjectRequest myRequest = new JsonObjectRequest(Request.Method.POST,
+                API.AUTHENT_ROUTE, new JSONObject(params), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("Response", response.toString());
+                try {
+                    onLoginSuccess();
+                    token = new Token((String) response.get("token"));
+                    //TODO
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error.Response", error.toString());
+                        onLoginFailed();
+                        loginButton.setEnabled(true);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/json; charset=utf-8");
+                return headers;
+            }
+        };
+        mRequestQueue.add(myRequest);
+
     }
 }

@@ -1,4 +1,4 @@
-package com.advisorapp;
+package com.advisorapp.api;
 
 /**
  * Created by Steeve on 29/05/2016.
