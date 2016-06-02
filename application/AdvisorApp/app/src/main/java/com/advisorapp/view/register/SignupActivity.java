@@ -91,21 +91,23 @@ public class SignupActivity extends AppCompatActivity {
     public void signup() {
         Log.d(TAG, "Signup");
 
-//        if (!validate()) {
-//            onSignupFailed();
-//            return;
-//        }
+        if (!validate()) {
+            onSignupFailed();
+            return;
+        }
 
-//        _signupButton.setEnabled(false);
+        _signupButton.setEnabled(false);
 
-        String firstname = firstnameText.getText().toString();
-        String lastname = lastnameText.getText().toString();
-        String remoteID = remoteIdText.getText().toString();
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        User user = new User();
+        user.setLastName(lastnameText.getText().toString().trim());
+        user.setFirstName(firstnameText.getText().toString().trim());
+        user.setRemoteId(remoteIdText.getText().toString().trim());
+        user.setEmail(_emailText.getText().toString().trim());
+        user.setPassword(_passwordText.getText().toString().trim());
+
 
 //        new SignupTask().doInBackground(firstname,lastname,remoteID,email,password);
-        new SignupTask().doInBackground("test", "ffzefzefz", "ffzefz", "abcd@got.com", "azerty");
+        new SignupTask().doInBackground(user);
         // TODO: Implement your own signup logic here.
     }
 
@@ -126,6 +128,7 @@ public class SignupActivity extends AppCompatActivity {
         boolean valid = true;
 
         String name = firstnameText.getText().toString();
+        String lastname = lastnameText.getText().toString();
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
@@ -150,10 +153,17 @@ public class SignupActivity extends AppCompatActivity {
             _passwordText.setError(null);
         }
 
+        if (lastname.isEmpty()){
+            lastnameText.setError("this field is empty");
+            valid = false;
+        } else {
+            lastnameText.setError(null);
+        }
+
         return valid;
     }
 
-    private class SignupTask extends AsyncTask<String, String, Boolean> {
+    private class SignupTask extends AsyncTask<User, String, Boolean> {
 
         private MaterialDialog progressDialog;
 
@@ -169,16 +179,9 @@ public class SignupActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Boolean doInBackground(String... params) {
-
-            final User user = new User();
-            user.setEmail("test@gmail.com");
-            user.setFirstName("firstNameTest");
-            user.setLastName("lastNameTest");
-            user.setPassword("testPWD");
-
-//            postUserV1(user);
-
+        protected Boolean doInBackground(User... user) {
+            postUserV1(user[0]);
+//            postUserV2(user[0]); //on garde pour l'exemple
 
             return true; //todo manage en fonction token
         }
@@ -188,83 +191,81 @@ public class SignupActivity extends AppCompatActivity {
             progressDialog.dismiss();
         }
     }
-//
-//    private void postUserV1(final User user){
-//
-//        StringRequest postRequest = new StringRequest(Request.Method.POST, API.USERS,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-//                        // response
-//                        Log.d("Response", response);
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        // error
-//                        Log.d("Error.Response", error.toString());
-//                    }
-//                }
-//        ) {
-//            @Override
-//            protected Map<String, String> getParams() {
-//                Map<String, String> params = new HashMap<String, String>();
-//                params.put("firstname", "testfirstname");
-//                params.put("lastname", "testlastname");
-//                params.put("email", "testpwd");
-//                return params;
-//            }
-//
-//            @Override
-//            public String getBodyContentType() {
-//                return "application/json; charset=UTF-8";
-//            }
-//
-//            @Override
-//            public byte[] getBody() throws AuthFailureError {
-//                ObjectMapper mapper = new ObjectMapper();
-//                try {
-//                    return mapper.writeValueAsString(user).getBytes();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                return null;
-//            }
-//        };
-//        mRequestQueue.add(postRequest);
-//    }
-//
-//    private void postUserV2(User user){
-//        ObjectMapper mapper = new ObjectMapper();
-//        try {
-//            String jsonUser = mapper.writeValueAsString(user);
-//            JsonObjectRequest myRequest = new JsonObjectRequest(Request.Method.POST,
-//                    API.USERS, new JSONObject(jsonUser), new Response.Listener<JSONObject>() {
-//                @Override
-//                public void onResponse(JSONObject response) {
-//                    Log.d("Response", response.toString());
-//                }
-//            },
-//                    new Response.ErrorListener() {
-//                        @Override
-//                        public void onErrorResponse(VolleyError error) {
-//                            Log.d("Error.Response", error.toString());
-//                        }
-//                    }){
-//                @Override
-//                public Map<String, String> getHeaders() throws AuthFailureError {
-//                    HashMap<String, String> headers = new HashMap<String, String>();
-//                    headers.put("Content-Type", "application/json; charset=utf-8");
-//                    return headers;
-//                }
-//            };
-//            mRequestQueue.add(myRequest);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+
+    private void postUserV1(final User user){
+
+        StringRequest postRequest = new StringRequest(Request.Method.POST, API.SIGNUP,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.d("Response", response);
+                        onSignupSuccess();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        onSignupFailed();
+                        _emailText.setError("This mail adresse is already link to an existing account");
+                        _signupButton.setEnabled(true);
+                        Log.d("Error.Response", error.toString());
+                    }
+                }
+        ) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=UTF-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    return mapper.writeValueAsString(user).getBytes();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        mRequestQueue.add(postRequest);
+    }
+
+    private void postUserV2(User user){
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            String jsonUser = mapper.writeValueAsString(user);
+            JsonObjectRequest myRequest = new JsonObjectRequest(Request.Method.POST,
+                    API.SIGNUP, new JSONObject(jsonUser), new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    Log.d("Response", response.toString());
+                }
+            },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("Error.Response", error.toString());
+                            _emailText.setError("This mail adresse is already link to an existing account");
+                            _signupButton.setEnabled(true);
+                        }
+                    }){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("Content-Type", "application/json; charset=utf-8");
+                    return headers;
+                }
+            };
+            mRequestQueue.add(myRequest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

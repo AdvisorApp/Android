@@ -28,8 +28,9 @@
             <EditText android:id="@+id/input_firstname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapWords"
-                android:hint="Firstname *" />
+                android:inputType="textNoSuggestions"
+                android:hint="Firstname *"
+                />
         </android.support.design.widget.TextInputLayout>
 
         <!--  Surname Label -->
@@ -54,7 +55,7 @@
             <EditText android:id="@+id/inpute_remote_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapWords"
+                android:inputType="textNoSuggestions"
                 android:hint="Remote id" />
         </android.support.design.widget.TextInputLayout>
 
@@ -80,7 +81,7 @@
             <EditText android:id="@+id/input_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"
+                android:inputType="textNoSuggestions"
                 android:hint="Password *"/>
         </android.support.design.widget.TextInputLayout>
 
