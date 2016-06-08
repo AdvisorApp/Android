@@ -17,6 +17,7 @@ import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
 import com.advisorapp.api.Token;
 import com.advisorapp.view.register.SignupActivity;
+import com.advisorapp.view.uv.UvListActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -123,7 +124,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
-        finish();
+        Intent intent = new Intent(getApplicationContext(), UvListActivity.class);
+        startActivity(intent);
+        //finish();
     }
 
     public void onLoginFailed() {

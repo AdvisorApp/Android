@@ -25,6 +25,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.register.SignupActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".view.uv.UvListActivity" android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
