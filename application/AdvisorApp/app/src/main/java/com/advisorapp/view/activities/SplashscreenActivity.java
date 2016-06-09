@@ -17,7 +17,7 @@ import com.advisorapp.api.Token;
 import com.advisorapp.model.Uv;
 import com.advisorapp.view.activities.login.LoginActivity;
 import com.advisorapp.view.activities.register.SignupActivity;
-import com.advisorapp.view.activities.uv.UvListActivity;
+import com.advisorapp.view.activities.uv.RemainingUvListActivity;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -84,7 +84,7 @@ public class SplashscreenActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Intent intent = new Intent(getApplicationContext(), UvListActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), RemainingUvListActivity.class);
                         intent.putExtra("token", token);
                         startActivity(intent);
                     }

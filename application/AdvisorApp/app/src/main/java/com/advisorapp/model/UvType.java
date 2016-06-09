@@ -1,13 +1,20 @@
 package com.advisorapp.model;
 
 
-public class UvType {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class UvType implements Parcelable{
 
     private long id;
 
     private String type;
 
     private double hoursByCredit;
+
+    public UvType(){
+
+    }
 
     public long getId() {
         return id;
@@ -27,5 +34,34 @@ public class UvType {
 
     public void setHoursByCredit(double hoursByCredit) {
         this.hoursByCredit = hoursByCredit;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.type);
+        dest.writeDouble(this.hoursByCredit);
+    }
+
+    public static final Parcelable.Creator<UvType> CREATOR
+            = new Parcelable.Creator<UvType>() {
+        public UvType createFromParcel(Parcel in) {
+            return new UvType(in);
+        }
+
+        public UvType[] newArray(int size) {
+            return new UvType[size];
+        }
+    };
+
+    private UvType(Parcel in) {
+        this.id = in.readLong();
+        this.type = in.readString();
+        this.hoursByCredit = in.readDouble();
     }
 }

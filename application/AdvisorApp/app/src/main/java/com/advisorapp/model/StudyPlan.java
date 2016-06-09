@@ -1,9 +1,12 @@
 package com.advisorapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.Set;
 
-public class StudyPlan implements Serializable{
+public class StudyPlan implements Parcelable{
 
     private long id;
 
@@ -11,14 +14,13 @@ public class StudyPlan implements Serializable{
 
     private String name;
 
-    private Set<Semester> semesters;
+    public StudyPlan(){
 
-    private Option option;
+    }
 
     public long getId() {
         return id;
     }
-
 
     public User getUser() {
         return user;
@@ -32,11 +34,6 @@ public class StudyPlan implements Serializable{
         this.user = user;
     }
 
-    public void addSemester(Semester semester){
-        this.semesters.add(semester);
-        semester.setStudyPlan(this);
-    }
-
     public String getName() {
         return name;
     }
@@ -45,21 +42,6 @@ public class StudyPlan implements Serializable{
         this.name = name;
     }
 
-    public Set<Semester> getSemesters() {
-        return semesters;
-    }
-
-    public void setSemesters(Set<Semester> semesters) {
-        this.semesters = semesters;
-    }
-
-    public Option getOption() {
-        return option;
-    }
-
-    public void setOption(Option option) {
-        this.option = option;
-    }
 
     @Override
     public String toString() {
@@ -67,8 +49,35 @@ public class StudyPlan implements Serializable{
                 "id=" + id +
                 ", user=" + user +
                 ", name='" + name + '\'' +
-                ", semesters=" + semesters +
-                ", option=" + option +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeParcelable(this.user, flags);
+        dest.writeString(this.name);
+    }
+
+    public static final Parcelable.Creator<StudyPlan> CREATOR
+            = new Parcelable.Creator<StudyPlan>() {
+        public StudyPlan createFromParcel(Parcel in) {
+            return new StudyPlan(in);
+        }
+
+        public StudyPlan[] newArray(int size) {
+            return new StudyPlan[size];
+        }
+    };
+
+    private StudyPlan(Parcel in) {
+        this.id = in.readLong();
+        this.user = (User) in.readParcelable(User.class.getClassLoader());
+        this.name = in.readString();
     }
 }

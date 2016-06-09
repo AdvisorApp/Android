@@ -2,11 +2,14 @@ package com.advisorapp.model;
 
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 import java.util.Set;
 
 
-public class User {
+public class User implements Parcelable{
 
     private long id;
 
@@ -22,8 +25,9 @@ public class User {
 
     private String password;
 
-    private Set<StudyPlan> studyPlans;
+    public User(){
 
+    }
 
     public long getId() {
         return id;
@@ -61,15 +65,6 @@ public class User {
         this.remoteId = remoteId;
     }
 
-    public Set<StudyPlan> getStudyPlans() {
-        return studyPlans;
-    }
-
-    public void addStudyPlan(StudyPlan studyPlan){
-        this.studyPlans.add(studyPlan);
-        studyPlan.setUser(this);
-    }
-
     public String getEmail() {
         return email;
     }
@@ -86,10 +81,6 @@ public class User {
         this.password = password;
     }
 
-    public void setStudyPlans(Set<StudyPlan> studyPlans) {
-        this.studyPlans = studyPlans;
-    }
-
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("User{");
@@ -100,8 +91,44 @@ public class User {
         sb.append(", remoteId='").append(remoteId).append('\'');
         sb.append(", email='").append(email).append('\'');
         sb.append(", password='").append(password).append('\'');
-        sb.append(", studyPlans=").append(studyPlans);
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.firstName);
+        dest.writeString(this.lastName);
+        dest.writeSerializable(this.birthday);
+        dest.writeString(this.remoteId);
+        dest.writeString(this.email);
+        dest.writeString(this.password);
+    }
+
+    public static final Parcelable.Creator<User> CREATOR
+            = new Parcelable.Creator<User>() {
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    private User(Parcel in) {
+        this.id = in.readLong();
+        this.firstName = in.readString();
+        this.lastName = in.readString();
+        this.birthday = (java.util.Date) in.readSerializable();
+        this.remoteId = in.readString();
+        this.email = in.readString();
+        this.password = in.readString();
     }
 }

@@ -1,18 +1,24 @@
 package com.advisorapp.view.activities.uv;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
 import com.advisorapp.api.APIHelper;
 import com.advisorapp.api.Token;
+import com.advisorapp.listeners.RecyclerItemClickListener;
 import com.advisorapp.model.StudyPlan;
 import com.advisorapp.model.Uv;
+import com.advisorapp.view.activities.login.LoginActivity;
 import com.advisorapp.view.adapters.UvListAdapter;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -34,7 +40,7 @@ import butterknife.ButterKnife;
 /**
  * Created by Alexis on 08/06/2016.
  */
-public class UvListActivity extends AppCompatActivity {
+public class RemainingUvListActivity extends AppCompatActivity {
 
     private static final String TAG = "UvListActivity";
 
@@ -45,6 +51,8 @@ public class UvListActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private UvListAdapter mUvListAdapter;
+
+    private StudyPlan studyPlan;
     private List<Uv> uvs = new ArrayList<>();
 
     @Override
@@ -54,6 +62,8 @@ public class UvListActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         this.token = getIntent().getParcelableExtra("token");
+        this.studyPlan = new StudyPlan();
+        this.studyPlan.setId(1);
 
         AdvisorAppApplication app = (AdvisorAppApplication) getApplication();
         this.mRequestQueue = app.getmVolleyRequestQueue();
@@ -70,6 +80,20 @@ public class UvListActivity extends AppCompatActivity {
 
         mUvListAdapter = new UvListAdapter(this.uvs);
         mRecyclerView.setAdapter(mUvListAdapter);
+
+        mRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position) {
+                        Log.d(TAG, ""+uvs.get(position));
+                        Intent intent = new Intent(getApplicationContext(), UvDetailActivity.class);
+                        intent.putExtra("token", token.getToken());
+                        intent.putExtra("studyPlan", studyPlan);
+                        intent.putExtra("uv", uvs.get(position));
+                        intent.putExtra("uvAlreadyAdd", false);
+                        startActivity(intent);
+                    }
+                })
+        );
     }
 
     @Override
@@ -83,7 +107,6 @@ public class UvListActivity extends AppCompatActivity {
         super.onStop();
     }
 
-
     private class DownloadUvTask extends AsyncTask<String, String, Boolean> {
 
         @Override
@@ -92,11 +115,7 @@ public class UvListActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(String... params) {
-
-            StudyPlan sp = new StudyPlan();
-            sp.setId(1);
-            getUvList(sp.getId());
-
+            getUvList();
             return true;
         }
 
@@ -105,8 +124,8 @@ public class UvListActivity extends AppCompatActivity {
         }
     }
 
-    private void getUvList(long studyPlanId) {
-        JsonArrayRequest myRequest = APIHelper.getRemainingUvs(this.token, studyPlanId,
+    private void getUvList() {
+        JsonArrayRequest myRequest = APIHelper.getRemainingUvs(this.token, this.studyPlan.getId(),
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {

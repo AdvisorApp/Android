@@ -41,7 +41,6 @@ public class Semester {
 
     public void addUv(Uv uv){
         this.uvs.add(uv);
-        uv.addSemester(this);
     }
 
     public void setUvs(Set<Uv> uvs) {
