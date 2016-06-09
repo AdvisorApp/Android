@@ -15,7 +15,7 @@ public class Uv {
 
     private int minSemester;
 
-    private boolean isAvailableForCart;
+    private boolean availableForCart;
 
     private double chs;
 
@@ -72,11 +72,11 @@ public class Uv {
     }
 
     public boolean isAvailableForCart() {
-        return isAvailableForCart;
+        return availableForCart;
     }
 
     public void setIsAvailableForCard(boolean isAvailableForCard) {
-        this.isAvailableForCart = isAvailableForCard;
+        this.availableForCart = isAvailableForCard;
     }
 
     public double getChs() {
@@ -133,5 +133,22 @@ public class Uv {
 
     public void setPrerequisitesUv(Set<Uv> prerequisitesUv) {
         this.prerequisitesUv = prerequisitesUv;
+    }
+
+    @Override
+    public String toString() {
+        return "Uv{" +
+                "id=" + id +
+                ", remoteId='" + remoteId + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", minSemester=" + minSemester +
+                ", availableForCart=" + availableForCart +
+                ", chs=" + chs +
+                ", location=" + location +
+                ", uvType=" + uvType +
+                ", semesters=" + semesters +
+                ", prerequisitesUv=" + prerequisitesUv +
+                '}';
     }
 }
