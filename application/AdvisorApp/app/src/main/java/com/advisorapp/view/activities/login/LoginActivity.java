@@ -1,5 +1,6 @@
 package com.advisorapp.view.activities.login;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -203,18 +204,18 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.toString());
-                        onLoginFailed();
-                        loginButton.setEnabled(true);
-                    }
-                });
+        new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Error.Response", error.toString());
+                onLoginFailed();
+                loginButton.setEnabled(true);
+            }
+        });
         mRequestQueue.add(myRequest);
     }
 
-    public void saveToken(){
+    public void saveToken() {
         SharedPreferences sharedPref = this.getSharedPreferences("advisorapp", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getString(R.string.saved_token), this.token.getToken());
