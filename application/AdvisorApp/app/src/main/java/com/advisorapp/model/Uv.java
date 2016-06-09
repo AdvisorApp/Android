@@ -1,9 +1,14 @@
 package com.advisorapp.model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-public class Uv {
+public class Uv implements Parcelable{
 
     private long id;
 
@@ -23,13 +28,11 @@ public class Uv {
 
     private UvType uvType;
 
-    private Set<Semester> semesters;
+    private ArrayList<Uv> prerequisitesUv;
 
-    private Set<Uv> corequisitesUv;
-
-    private Set<Uv> corequisitesUvOf;
-
-    private Set<Uv> prerequisitesUv;
+    public Uv(){
+        this.prerequisitesUv = new ArrayList<Uv>();
+    }
 
     public Location getLocation() {
         return location;
@@ -99,39 +102,11 @@ public class Uv {
         this.uvType = uvType;
     }
 
-    public Set<Semester> getSemesters() {
-        return semesters;
-    }
-
-    public void setSemesters(Set<Semester> semesters) {
-        this.semesters = semesters;
-    }
-
-    public void addSemester(Semester semester) {
-        this.semesters.add(semester);
-    }
-
-    public Set<Uv> getCorequisitesUv() {
-        return corequisitesUv;
-    }
-
-    public void setCorequisitesUv(Set<Uv> corequisitesUv) {
-        this.corequisitesUv = corequisitesUv;
-    }
-
-    public Set<Uv> getCorequisitesUvOf() {
-        return corequisitesUvOf;
-    }
-
-    public void setCorequisitesUvOf(Set<Uv> corequisitesUvOf) {
-        this.corequisitesUvOf = corequisitesUvOf;
-    }
-
-    public Set<Uv> getPrerequisitesUv() {
+    public ArrayList<Uv> getPrerequisitesUv() {
         return prerequisitesUv;
     }
 
-    public void setPrerequisitesUv(Set<Uv> prerequisitesUv) {
+    public void setPrerequisitesUv(ArrayList<Uv> prerequisitesUv) {
         this.prerequisitesUv = prerequisitesUv;
     }
 
@@ -142,13 +117,54 @@ public class Uv {
                 ", remoteId='" + remoteId + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", minSemester=" + minSemester +
                 ", availableForCart=" + availableForCart +
                 ", chs=" + chs +
                 ", location=" + location +
                 ", uvType=" + uvType +
-                ", semesters=" + semesters +
                 ", prerequisitesUv=" + prerequisitesUv +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(this.id);
+        dest.writeString(this.remoteId);
+        dest.writeString(this.name);
+        dest.writeString(this.description);
+        dest.writeByte((byte) (this.availableForCart ? 1 : 0));
+        dest.writeDouble(this.chs);
+        dest.writeString(this.location.name());
+        dest.writeParcelable(this.uvType, flags);
+        dest.writeTypedList(this.prerequisitesUv);
+    }
+
+    public static final Parcelable.Creator<Uv> CREATOR
+            = new Parcelable.Creator<Uv>() {
+        public Uv createFromParcel(Parcel in) {
+            return new Uv(in);
+        }
+
+        public Uv[] newArray(int size) {
+            return new Uv[size];
+        }
+    };
+
+    private Uv(Parcel in) {
+        this();
+
+        this.id = in.readLong();
+        this.remoteId = in.readString();
+        this.name = in.readString();
+        this.description = in.readString();
+        this.availableForCart = in.readByte() != 0;
+        this.chs = in.readDouble();
+        this.location = Location.valueOf(in.readString());
+        this.uvType = (UvType) in.readParcelable(UvType.class.getClassLoader());
+        in.readTypedList(this.prerequisitesUv, Uv.CREATOR);
     }
 }
