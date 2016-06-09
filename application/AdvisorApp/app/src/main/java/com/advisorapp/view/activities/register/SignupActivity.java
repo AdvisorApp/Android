@@ -1,4 +1,4 @@
-package com.advisorapp.view.register;
+package com.advisorapp.view.activities.register;
 
 
 import android.os.AsyncTask;

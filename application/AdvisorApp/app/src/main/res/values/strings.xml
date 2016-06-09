@@ -16,4 +16,6 @@
 
 
     <string name="API_URL">http://192.168.0.13:8090/api/</string>
+    <string name="token" />
+    <string name="saved_token" />
 </resources>

@@ -1,30 +1,33 @@
-package com.advisorapp.view.uv;
+package com.advisorapp.view.activities.uv;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
-import com.advisorapp.api.API;
+import com.advisorapp.api.APIHelper;
 import com.advisorapp.api.Token;
 import com.advisorapp.model.StudyPlan;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
+import com.advisorapp.model.Uv;
+import com.advisorapp.view.adapters.UvListAdapter;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 
@@ -37,9 +40,12 @@ public class UvListActivity extends AppCompatActivity {
 
     private Token token;
 
-
     private RequestQueue mRequestQueue;
     private ObjectMapper mMapper;
+
+    private RecyclerView mRecyclerView;
+    private UvListAdapter mUvListAdapter;
+    private List<Uv> uvs = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,8 +53,10 @@ public class UvListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_uvlist);
         ButterKnife.bind(this);
 
+        this.token = getIntent().getParcelableExtra("token");
+
         AdvisorAppApplication app = (AdvisorAppApplication) getApplication();
-        mRequestQueue = app.getmVolleyRequestQueue();
+        this.mRequestQueue = app.getmVolleyRequestQueue();
         this.mMapper = new ObjectMapper();
 
         this.runOnUiThread(new Runnable() {
@@ -56,6 +64,12 @@ public class UvListActivity extends AppCompatActivity {
                 new DownloadUvTask().doInBackground();
             }
         });
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        mUvListAdapter = new UvListAdapter(this.uvs);
+        mRecyclerView.setAdapter(mUvListAdapter);
     }
 
     @Override
@@ -81,15 +95,8 @@ public class UvListActivity extends AppCompatActivity {
 
             StudyPlan sp = new StudyPlan();
             sp.setId(1);
+            getUvList(sp.getId());
 
-            try {
-                String spInString = mMapper.writeValueAsString(sp);
-                HashMap<String, String> parametres = new HashMap<>();
-                parametres.put("studyPlan", spInString);
-                getUvList(parametres);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             return true;
         }
 
@@ -98,19 +105,24 @@ public class UvListActivity extends AppCompatActivity {
         }
     }
 
-    private void getUvList(HashMap<String, String> params) {
-        JsonObjectRequest myRequest = new JsonObjectRequest(
-                Request.Method.GET,
-                API.GET_REMAINING_UVS,
-                new JSONObject(params),
-                new Response.Listener<JSONObject>() {
+    private void getUvList(long studyPlanId) {
+        JsonArrayRequest myRequest = APIHelper.getRemainingUvs(this.token, studyPlanId,
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d("Response", response.toString());
+                    public void onResponse(JSONArray response) {
                         try {
-                            token = new Token((String) response.get("token"));
-                            //TODO
+                            for (int i = 0; i < response.length(); i++) {
+                                Uv uv = mMapper.readValue(response.getJSONObject(i).toString(), Uv.class);
+                                uvs.add(uv);
+                                mUvListAdapter.notifyDataSetChanged();
+                            }
                         } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (JsonMappingException e) {
+                            e.printStackTrace();
+                        } catch (JsonParseException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
@@ -120,14 +132,7 @@ public class UvListActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         Log.d("Error.Response", error.toString());
                     }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
-        };
+                });
         mRequestQueue.add(myRequest);
 
     }

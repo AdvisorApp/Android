@@ -1,5 +1,7 @@
-package com.advisorapp.view.login;
+package com.advisorapp.view.activities.login;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,27 +14,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.advisorapp.api.API;
 import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
+import com.advisorapp.api.APIHelper;
 import com.advisorapp.api.Token;
-import com.advisorapp.view.register.SignupActivity;
-import com.advisorapp.view.uv.UvListActivity;
+import com.advisorapp.view.activities.register.SignupActivity;
+import com.advisorapp.view.activities.uv.UvListActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -124,9 +121,10 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
+        this.saveToken();
         Intent intent = new Intent(getApplicationContext(), UvListActivity.class);
+        intent.putExtra("token", this.token);
         startActivity(intent);
-        //finish();
     }
 
     public void onLoginFailed() {
@@ -191,20 +189,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void postLogin(HashMap<String, String> params) {
-        JsonObjectRequest myRequest = new JsonObjectRequest(Request.Method.POST,
-                API.AUTHENT_ROUTE, new JSONObject(params), new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d("Response", response.toString());
-                try {
-                    onLoginSuccess();
-                    token = new Token((String) response.get("token"));
-                    //TODO
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        },
+        JsonObjectRequest myRequest = APIHelper.postAuth(params,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("Response", response.toString());
+                        try {
+                            token = new Token((String) response.get("token"));
+                            onLoginSuccess();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
@@ -212,15 +209,16 @@ public class LoginActivity extends AppCompatActivity {
                         onLoginFailed();
                         loginButton.setEnabled(true);
                     }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
-        };
+                });
         mRequestQueue.add(myRequest);
-
     }
+
+    public void saveToken(){
+        SharedPreferences sharedPref = this.getSharedPreferences("advisorapp", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.saved_token), this.token.getToken());
+        editor.commit();
+        Log.d("token", this.token.getToken());
+    }
+
 }
