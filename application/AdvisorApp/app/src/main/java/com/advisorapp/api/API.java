@@ -10,5 +10,5 @@ public interface API {
     String USERS_ME_ROUTE = URL+"users/me";
     String SIGNUP = URL+"auths/signup";
     String STUDY_PLANS = "/studyPlans";
-    String USER = URL+"/users/";
+    String USER = URL + "users/";
 }

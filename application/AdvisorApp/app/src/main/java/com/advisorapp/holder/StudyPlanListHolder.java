@@ -1,7 +1,6 @@
 package com.advisorapp.holder;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,7 +38,7 @@ public class StudyPlanListHolder extends RecyclerView.ViewHolder implements View
         menu.getItem(DELETE_MENU_ID).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Log.d("dee", textView.getText().toString());
+
                 return true;
             }
         });
