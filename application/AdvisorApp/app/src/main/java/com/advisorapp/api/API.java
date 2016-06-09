@@ -9,4 +9,7 @@ public interface API {
     String AUTHENT_ROUTE = URL+"auths/token";
     String USERS_ME_ROUTE = URL+"users/me";
     String SIGNUP = URL+"auths/signup";
+    String STUDY_PLANS = "/studyPlans";
+    String USER = URL+"/users/";
+
 }
