@@ -26,7 +26,8 @@ public class SemesterHolder extends TreeNode.BaseNodeViewHolder<IconTreeItemHold
         tvValue.setText(value.text);
 
         final PrintView iconView = (PrintView) view.findViewById(R.id.icon);
-        iconView.setIconText(context.getResources().getString(value.icon));
+        iconView.setBackgroundResource(value.icon);
+//        iconView.setBackground(context.getResources().getDrawable(value.icon));
 
         return view;
     }
@@ -36,3 +37,4 @@ public class SemesterHolder extends TreeNode.BaseNodeViewHolder<IconTreeItemHold
     }
 
 }
+
