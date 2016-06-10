@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
+import com.advisorapp.api.API;
 import com.advisorapp.api.APIHelper;
 import com.advisorapp.api.Token;
 import com.advisorapp.model.Location;
@@ -25,10 +26,14 @@ import com.advisorapp.view.activities.uv.RemainingUvListActivity;
 import com.advisorapp.view.activities.uv.UvDetailActivity;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
@@ -37,9 +42,12 @@ import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Steeve on 09/06/2016.
@@ -49,6 +57,9 @@ public class SemestersFragment extends Fragment{
 
     private Token token;
     private StudyPlan studyPlan;
+
+    private RequestQueue mRequestQueue;
+    private ObjectMapper mMapper;
 
     private ArrayList<Semester> semesters;
 
@@ -65,6 +76,10 @@ public class SemestersFragment extends Fragment{
         final View rootView = inflater.inflate(R.layout.fragment_default, null, false);
         final ViewGroup containerView = (ViewGroup) rootView.findViewById(R.id.container);
         rootView.findViewById(R.id.status_bar).setVisibility(View.GONE);
+
+        AdvisorAppApplication app = (AdvisorAppApplication) getActivity().getApplication();
+        this.mRequestQueue = app.getmVolleyRequestQueue();
+        this.mMapper = new ObjectMapper();
 
         this.root = TreeNode.root();
 
@@ -119,7 +134,6 @@ public class SemestersFragment extends Fragment{
         @Override
         public void onClick(TreeNode node, Object value) {
             if(node.isLeaf()){
-                Log.d("hey", "ho");
                 UVHolder.UvItem item = (UVHolder.UvItem) value;
 
                 Intent intent = new Intent(getActivity().getApplicationContext(), UvDetailActivity.class);
@@ -182,7 +196,7 @@ public class SemestersFragment extends Fragment{
 
                             switch (which) {
                                 case 0:
-                                    //todo intent pour new semester
+                                    postStudySemester();
                                     break;
                                 case 1:
                                     Intent intent = new Intent(getActivity().getApplicationContext(), RemainingUvListActivity.class);
@@ -211,6 +225,29 @@ public class SemestersFragment extends Fragment{
             }
             this.root.addChild(semesterNode);
         }
+    }
+
+    private void postStudySemester() {
+        JsonObjectRequest myRequest = APIHelper.postSemester(this.token, studyPlan.getId(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("Response", response.toString());
+                        Intent intent = new Intent(getActivity().getApplicationContext(), SemestersActivity.class);
+                        intent.putExtra("token", token);
+                        intent.putExtra("studyPlan", studyPlan);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error.Response", error.toString());
+                    }
+                });
+        mRequestQueue.add(myRequest);
+
     }
 
 }

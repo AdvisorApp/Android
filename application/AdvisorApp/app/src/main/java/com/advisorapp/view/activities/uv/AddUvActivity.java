@@ -13,6 +13,7 @@ import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
 import com.advisorapp.api.APIHelper;
 import com.advisorapp.api.Token;
+import com.advisorapp.model.ErrorMessage;
 import com.advisorapp.model.Semester;
 import com.advisorapp.model.StudyPlan;
 import com.advisorapp.model.Uv;
@@ -31,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
@@ -279,12 +281,39 @@ public class AddUvActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.toString());
-                        finish();
+                        try {
+                            String errorString = new String(error.networkResponse.data, "UTF-8");
+                            Log.d("Error.Response", errorString);
+                            ErrorMessage errorMessage = mMapper.readValue(errorString, ErrorMessage.class);
+                            displayError(errorMessage.getMessage());
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        } catch (JsonMappingException e) {
+                            e.printStackTrace();
+                        } catch (JsonParseException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 });
         mRequestQueue.add(myRequest);
 
+    }
+
+    public void displayError(String error){
+        new MaterialDialog.Builder(this)
+                .title("Information")
+                .content(error)
+                .positiveText("Ok")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(MaterialDialog dialog, DialogAction which) {
+                        finish();
+                    }
+                })
+                .show();
     }
 
 }

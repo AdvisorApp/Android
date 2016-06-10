@@ -331,10 +331,10 @@ Log.d(TAG, API.URL + "studyPlans/" + studyPlanId);
     }
 
     public void startSemesterActivity(StudyPlan studyPlan){
+        Log.d(TAG, studyPlan.toString());
         Intent intent = new Intent(getApplicationContext(), SemestersActivity.class);
         intent.putExtra("token", token);
         intent.putExtra("studyPlan", studyPlan);
-        Log.d(TAG, studyPlan.getId() + studyPlan.getName());
         startActivity(intent);
     }
 

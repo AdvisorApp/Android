@@ -51,8 +51,7 @@ public class SemestersActivity extends AppCompatActivity{
         this.semesters = new ArrayList<>();
 
         this.token = getIntent().getParcelableExtra("token");
-        this.studyPlan = new StudyPlan();
-        this.studyPlan.setId(1);
+        this.studyPlan = getIntent().getParcelableExtra("studyPlan");
 
         AdvisorAppApplication app = (AdvisorAppApplication) getApplication();
         this.mRequestQueue = app.getmVolleyRequestQueue();
@@ -93,9 +92,7 @@ public class SemestersActivity extends AppCompatActivity{
                                 Semester semester = mMapper.readValue(response.getJSONObject(i).toString(), Semester.class);
                                 semesters.add(semester);
                                 Log.d("semestre", semester.toString());
-
                             }
-                            Log.d("coucou", "coucou");
                             Fragment f = new SemestersFragment(token, studyPlan, semesters);
                             getFragmentManager().beginTransaction().replace(R.id.fragment, f, "SemestersFragment").commit();
                         } catch (JSONException e) {

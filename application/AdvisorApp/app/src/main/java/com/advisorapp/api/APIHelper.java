@@ -53,6 +53,11 @@ public class APIHelper {
         return new AbstractJsonObjectRequest(token, Request.Method.POST, url,  new JSONObject(params), listener, errorListener);
     }
 
+    public static AbstractJsonObjectRequest postSemester(Token token, long studyPlanId, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener){
+        String url = API.URL + "studyPlans/" + studyPlanId + "/semesters";
+        return new AbstractJsonObjectRequest(token, Request.Method.POST, url,  new JSONObject(new HashMap()), listener, errorListener);
+    }
+
     public static AbstractJsonObjectRequest deleteStudyPlan(Token token, long studyPlanId, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener){
         String url = API.URL + "studyPlans/" + studyPlanId;
         return new AbstractJsonObjectRequest(token, Request.Method.DELETE, url,  null, listener, errorListener);
