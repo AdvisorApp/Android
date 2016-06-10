@@ -18,4 +18,8 @@
     <string name="API_URL">http://192.168.0.13:8090/api/</string>
     <string name="token" />
     <string name="saved_token" />
+    <string name="add_studyplan">Add a study plan</string>
+    <string name="positive">Ok</string>
+    <string name="negative">Cancel</string>
+    <string name="new_studyplan_name">Name</string>
 </resources>

@@ -1,8 +1,6 @@
-package com.advisorapp.holder;
+package com.advisorapp.view.holders;
 
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,7 +10,7 @@ import com.advisorapp.model.StudyPlan;
 /**
  * Created by adric on 09/06/2016.
  */
-public class StudyPlanListHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+public class StudyPlanListHolder extends RecyclerView.ViewHolder {
 
     private static int DELETE_MENU_ID = 0;
     private TextView textView;
@@ -23,7 +21,7 @@ public class StudyPlanListHolder extends RecyclerView.ViewHolder implements View
         //c'est ici que l'on fait nos findView
 
         textView = (TextView) itemView.findViewById(R.id.studyplan_name);
-        itemView.setOnCreateContextMenuListener(this);
+        //itemView.setOnCreateContextMenuListener(this);
     }
 
     //puis ajouter une fonction pour remplir la cellule en fonction d'un StudyPlan
@@ -31,16 +29,4 @@ public class StudyPlanListHolder extends RecyclerView.ViewHolder implements View
         textView.setText(myObject.getName());
     }
 
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        menu.add(DELETE_MENU_ID, v.getId(), 0, "Delete");//groupId, itemId, order, title
-        menu.getItem(DELETE_MENU_ID).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-
-                return true;
-            }
-        });
-    }
 }

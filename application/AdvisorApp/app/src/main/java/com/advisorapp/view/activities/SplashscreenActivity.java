@@ -6,34 +6,20 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
 import com.advisorapp.api.APIHelper;
 import com.advisorapp.api.Token;
-import com.advisorapp.model.Uv;
 import com.advisorapp.view.activities.login.LoginActivity;
-import com.advisorapp.view.activities.register.SignupActivity;
-import com.advisorapp.view.activities.uv.UvListActivity;
+import com.advisorapp.view.studyplanlist.StudyPlanListActivity;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.IOException;
-
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -84,7 +70,7 @@ public class SplashscreenActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        Intent intent = new Intent(getApplicationContext(), UvListActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), StudyPlanListActivity.class);
                         intent.putExtra("token", token);
                         startActivity(intent);
                     }
