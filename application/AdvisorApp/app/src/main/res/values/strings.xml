@@ -455,4 +455,9 @@
     <string name="ic_whatshot">&#xe1ae;</string>
     <string name="ic_wifi_tethering">&#xe1af;</string>
     <string name="ic_work">&#xe1b0;</string>
+    <string name="add_studyplan">Add a study plan</string>
+    <string name="positive">Ok</string>
+    <string name="negative">Cancel</string>
+    <string name="new_studyplan_name">Name</string>
+
 </resources>

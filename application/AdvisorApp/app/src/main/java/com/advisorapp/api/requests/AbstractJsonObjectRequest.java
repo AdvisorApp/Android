@@ -1,18 +1,10 @@
 package com.advisorapp.api.requests;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
-import com.advisorapp.api.API;
 import com.advisorapp.api.Token;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;

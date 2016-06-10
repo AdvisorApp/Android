@@ -1,13 +1,13 @@
 package com.advisorapp.view.activities.login;
 
+
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
-import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,10 +18,8 @@ import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
 import com.advisorapp.api.APIHelper;
 import com.advisorapp.api.Token;
-import com.advisorapp.model.Semester;
 import com.advisorapp.view.activities.register.SignupActivity;
-import com.advisorapp.view.activities.uv.RemainingUvListActivity;
-import com.advisorapp.view.semesters.SemestersActivity;
+import com.advisorapp.view.studyplanlist.StudyPlanListActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -124,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
         this.saveToken();
-        Intent intent = new Intent(getApplicationContext(), SemestersActivity.class);
+        Intent intent = new Intent(getApplicationContext(), StudyPlanListActivity.class);
         intent.putExtra("token", this.token);
         startActivity(intent);
     }
@@ -204,18 +202,18 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", error.toString());
-                        onLoginFailed();
-                        loginButton.setEnabled(true);
-                    }
-                });
+        new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d("Error.Response", error.toString());
+                onLoginFailed();
+                loginButton.setEnabled(true);
+            }
+        });
         mRequestQueue.add(myRequest);
     }
 
-    public void saveToken(){
+    public void saveToken() {
         SharedPreferences sharedPref = this.getSharedPreferences("advisorapp", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getString(R.string.saved_token), this.token.getToken());

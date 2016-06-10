@@ -4,7 +4,6 @@ import com.advisorapp.api.requests.AbstractJsonArrayRequest;
 import com.advisorapp.api.requests.AbstractJsonObjectRequest;
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.JsonArrayRequest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -43,4 +42,20 @@ public class APIHelper {
         String url = API.URL + "semesters/" + semesterId + "/uv/" + uvId;
         return new AbstractJsonArrayRequest(token, Request.Method.PUT, url,  null, listener, errorListener);
     }
+
+    public static AbstractJsonArrayRequest getStudyPlans(Token token, long userId, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener){
+        String url = API.USER + userId + API.STUDY_PLANS;
+        return new AbstractJsonArrayRequest(token, url, listener, errorListener);
+    }
+
+    public static AbstractJsonObjectRequest postStudyPlan(Token token, HashMap<String, String> params, long userId, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener){
+        String url = API.USER + userId + API.STUDY_PLANS;
+        return new AbstractJsonObjectRequest(token, Request.Method.POST, url,  new JSONObject(params), listener, errorListener);
+    }
+
+    public static AbstractJsonObjectRequest deleteStudyPlan(Token token, long studyPlanId, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener){
+        String url = API.URL + "studyPlans/" + studyPlanId;
+        return new AbstractJsonObjectRequest(token, Request.Method.DELETE, url,  null, listener, errorListener);
+    }
+
 }
