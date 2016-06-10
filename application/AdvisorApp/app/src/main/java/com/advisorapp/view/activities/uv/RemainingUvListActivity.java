@@ -62,8 +62,8 @@ public class RemainingUvListActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         this.token = getIntent().getParcelableExtra("token");
-        this.studyPlan = new StudyPlan();
-        this.studyPlan.setId(1);
+        Log.d("token", token.getToken());
+        this.studyPlan = getIntent().getParcelableExtra("studyPlan");
 
         AdvisorAppApplication app = (AdvisorAppApplication) getApplication();
         this.mRequestQueue = app.getmVolleyRequestQueue();

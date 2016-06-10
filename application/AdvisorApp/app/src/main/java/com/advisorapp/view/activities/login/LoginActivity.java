@@ -18,8 +18,10 @@ import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
 import com.advisorapp.api.APIHelper;
 import com.advisorapp.api.Token;
+import com.advisorapp.model.Semester;
 import com.advisorapp.view.activities.register.SignupActivity;
 import com.advisorapp.view.activities.uv.RemainingUvListActivity;
+import com.advisorapp.view.semesters.SemestersActivity;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -122,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
         this.saveToken();
-        Intent intent = new Intent(getApplicationContext(), RemainingUvListActivity.class);
+        Intent intent = new Intent(getApplicationContext(), SemestersActivity.class);
         intent.putExtra("token", this.token);
         startActivity(intent);
     }

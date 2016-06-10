@@ -1,6 +1,8 @@
 package com.advisorapp.view.semesters;
 
 import android.app.Fragment;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.text.TextUtils;
@@ -10,14 +12,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
+import com.advisorapp.api.APIHelper;
+import com.advisorapp.api.Token;
 import com.advisorapp.model.Location;
+import com.advisorapp.model.Semester;
+import com.advisorapp.model.StudyPlan;
 import com.advisorapp.model.Uv;
+import com.advisorapp.view.activities.uv.AddUvActivity;
+import com.advisorapp.view.activities.uv.RemainingUvListActivity;
+import com.advisorapp.view.activities.uv.UvDetailActivity;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -26,14 +47,30 @@ import java.util.ArrayList;
 public class SemestersFragment extends Fragment{
     private AndroidTreeView tView;
 
+    private Token token;
+    private StudyPlan studyPlan;
+
+    private ArrayList<Semester> semesters;
+
+    private TreeNode root;
+
+    public SemestersFragment(Token token, StudyPlan studyPlan, ArrayList<Semester> semesters){
+        this.token = token;
+        this.studyPlan = studyPlan;
+        this.semesters = semesters;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_default, null, false);
         final ViewGroup containerView = (ViewGroup) rootView.findViewById(R.id.container);
         rootView.findViewById(R.id.status_bar).setVisibility(View.GONE);
 
-        final TreeNode root = TreeNode.root();
+        this.root = TreeNode.root();
 
+        this.buildTree();
+
+/*
         TreeNode myProfile = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.drawable.ic_semester, "Semester 1")).setViewHolder(new SemesterHolder(getActivity()));
         TreeNode bruce = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.drawable.ic_semester, "Semester 2")).setViewHolder(new SemesterHolder(getActivity()));
         TreeNode clark = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.drawable.ic_semester, "Semester 3")).setViewHolder(new SemesterHolder(getActivity()));
@@ -43,7 +80,7 @@ public class SemestersFragment extends Fragment{
         addProfileData(bruce);
         addProfileData(barry);
         root.addChildren(myProfile, bruce, barry, clark);
-
+*/
         tView = new AndroidTreeView(getActivity(), root);
         tView.setDefaultAnimation(true);
         tView.setDefaultContainerStyle(R.style.TreeNodeStyleDivided, true);
@@ -56,6 +93,7 @@ public class SemestersFragment extends Fragment{
             }
         }
 
+        tView.setDefaultNodeClickListener(nodeClickListener);
         tView.setDefaultNodeLongClickListener(nodeLongClickListener);
         FloatingActionButton fab = (FloatingActionButton)rootView.findViewById(R.id.fab);
         fab.setOnClickListener(fabListener);
@@ -80,15 +118,25 @@ public class SemestersFragment extends Fragment{
     private TreeNode.TreeNodeClickListener nodeClickListener = new TreeNode.TreeNodeClickListener() {
         @Override
         public void onClick(TreeNode node, Object value) {
-            UVHolder.UvItem item = (UVHolder.UvItem) value;
-            //TODO t'as l'uv en faisant item.uv
+            if(node.isLeaf()){
+                Log.d("hey", "ho");
+                UVHolder.UvItem item = (UVHolder.UvItem) value;
+
+                Intent intent = new Intent(getActivity().getApplicationContext(), UvDetailActivity.class);
+                intent.putExtra("token", token.getToken());
+                Log.d("hey", token.getToken());
+                intent.putExtra("studyPlan", studyPlan);
+                intent.putExtra("uv", item.uv);
+                intent.putExtra("uvAlreadyAdd", true);
+                startActivity(intent);
+            }
         }
     };
 
     private TreeNode.TreeNodeLongClickListener nodeLongClickListener = new TreeNode.TreeNodeLongClickListener() {
         @Override
         public boolean onLongClick(TreeNode node, Object value) {
-            if (value instanceof  UVHolder){
+            if (node.isLeaf()){
                 Uv uv = ((UVHolder.UvItem) value).uv;
                 new MaterialDialog.Builder(getActivity())
                         .title("Remove UV")
@@ -137,8 +185,10 @@ public class SemestersFragment extends Fragment{
                                     //todo intent pour new semester
                                     break;
                                 case 1:
-                                    Log.d("DEBUG", "TEST");
-                                    //todo ADD UV
+                                    Intent intent = new Intent(getActivity().getApplicationContext(), RemainingUvListActivity.class);
+                                    intent.putExtra("token", token);
+                                    intent.putExtra("studyPlan", studyPlan);
+                                    startActivity(intent);
                                     break;
                                 case 2:
                                     //todo panier
@@ -151,4 +201,16 @@ public class SemestersFragment extends Fragment{
                     .show();
         }
     };
+
+    private void buildTree() {
+        for(Semester semester : semesters){
+            TreeNode semesterNode = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.drawable.ic_semester, "Semester " + semester.getNumber())).setViewHolder(new SemesterHolder(getActivity()));
+            for (Uv uv : semester.getUvs()) {
+                TreeNode uvNode = new TreeNode(new UVHolder.UvItem(uv)).setViewHolder(new UVHolder(getActivity()));
+                semesterNode.addChild(uvNode);
+            }
+            this.root.addChild(semesterNode);
+        }
+    }
+
 }

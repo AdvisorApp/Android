@@ -60,4 +60,5 @@ public class Semester {
     public String toString(){
         return "Semester " + this.number;
     }
+
 }
