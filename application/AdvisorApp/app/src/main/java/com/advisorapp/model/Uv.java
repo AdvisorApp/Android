@@ -36,6 +36,9 @@ public class Uv implements Parcelable{
         this.location = location;
     }
 
+
+    private Set<Semester> semesters;
+
     private UvType uvType;
 
     private ArrayList<Uv> prerequisitesUv;
