@@ -1,6 +1,8 @@
 package com.advisorapp.view.semesters;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +35,7 @@ import java.util.List;
 /**
  * Created by Steeve on 08/06/2016.
  */
-public class SemestersActivity extends AppCompatActivity{
+public class SemestersActivity extends AppCompatActivity {
 
     private Token token;
 
@@ -42,6 +44,8 @@ public class SemestersActivity extends AppCompatActivity{
 
     private StudyPlan studyPlan;
     private ArrayList<Semester> semesters;
+
+    private SemestersFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,12 @@ public class SemestersActivity extends AppCompatActivity{
                 new DownloadSemesterTask().doInBackground();
             }
         });
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private class DownloadSemesterTask extends AsyncTask<String, String, Boolean> {
@@ -93,8 +103,9 @@ public class SemestersActivity extends AppCompatActivity{
                                 semesters.add(semester);
                                 Log.d("semestre", semester.toString());
                             }
-                            Fragment f = new SemestersFragment(token, studyPlan, semesters);
-                            getFragmentManager().beginTransaction().replace(R.id.fragment, f, "SemestersFragment").commit();
+                                fragment = new SemestersFragment(token, studyPlan, semesters);
+                                getFragmentManager().beginTransaction().replace(R.id.fragment, fragment, "SemestersFragment").commit();
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         } catch (JsonMappingException e) {

@@ -101,12 +101,14 @@ public class SemestersFragment extends Fragment{
         tView.setDefaultContainerStyle(R.style.TreeNodeStyleDivided, true);
         containerView.addView(tView.getView());
 
+        /**
         if (savedInstanceState != null) {
             String state = savedInstanceState.getString("tState");
             if (!TextUtils.isEmpty(state)) {
                 tView.restoreState(state);
             }
         }
+         */
 
         tView.setDefaultNodeClickListener(nodeClickListener);
         tView.setDefaultNodeLongClickListener(nodeLongClickListener);
@@ -248,6 +250,10 @@ public class SemestersFragment extends Fragment{
                 });
         mRequestQueue.add(myRequest);
 
+    }
+
+    public void setSemesters(ArrayList<Semester> semesters){
+        this.semesters = semesters;
     }
 
 }

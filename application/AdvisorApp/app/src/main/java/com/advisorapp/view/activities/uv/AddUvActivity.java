@@ -1,5 +1,6 @@
 package com.advisorapp.view.activities.uv;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import com.advisorapp.model.Semester;
 import com.advisorapp.model.StudyPlan;
 import com.advisorapp.model.Uv;
 import com.advisorapp.view.adapters.UvListAdapter;
+import com.advisorapp.view.semesters.SemestersActivity;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.RequestQueue;
@@ -275,7 +277,7 @@ public class AddUvActivity extends AppCompatActivity {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
-                        finish();
+                        startSemesterActivity();
                     }
                 },
                 new Response.ErrorListener() {
@@ -310,10 +312,19 @@ public class AddUvActivity extends AppCompatActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog dialog, DialogAction which) {
-                        finish();
+                        startSemesterActivity();
                     }
                 })
                 .show();
+    }
+
+    public void startSemesterActivity(){
+        Intent intent = new Intent(getApplicationContext(), SemestersActivity.class);
+        intent.putExtra("token", token);
+        intent.putExtra("studyPlan", studyPlan);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
 }
