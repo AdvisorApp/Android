@@ -7,9 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 
 import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
@@ -18,7 +16,6 @@ import com.advisorapp.api.Token;
 import com.advisorapp.listeners.RecyclerItemClickListener;
 import com.advisorapp.model.StudyPlan;
 import com.advisorapp.model.Uv;
-import com.advisorapp.view.activities.login.LoginActivity;
 import com.advisorapp.view.adapters.UvListAdapter;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;

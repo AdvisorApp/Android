@@ -12,5 +12,8 @@ public interface API {
     String SIGNUP = URL+"auths/signup";
     String STUDY_PLANS = "/studyPlans";
     String USER = URL + "users/";
+    String UV_USER = "/uvUsers";
+    String UV_ROUTE = "uvs/";
+
 
 }
