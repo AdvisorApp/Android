@@ -1,5 +1,6 @@
 package com.advisorapp.view.studyplanlist;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,17 +14,23 @@ import android.widget.EditText;
 
 import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
+import com.advisorapp.api.API;
 import com.advisorapp.api.APIHelper;
 import com.advisorapp.api.Token;
 import com.advisorapp.model.StudyPlan;
+import com.advisorapp.model.User;
 import com.advisorapp.view.adapters.StudyPlanListAdapter;
+import com.advisorapp.view.semesters.SemestersActivity;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -36,6 +43,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,6 +58,7 @@ public class StudyPlanListActivity extends AppCompatActivity
     private Token token;
     private ObjectMapper mMapper;
     private RequestQueue mRequestQueue;
+    private User user;
 
     @BindView(R.id.floating_button)
     FloatingActionButton fab;
@@ -60,29 +69,22 @@ public class StudyPlanListActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_studyplanlist);
 
+        AdvisorAppApplication app = (AdvisorAppApplication) getApplication();
+        this.mRequestQueue = app.getmVolleyRequestQueue();
+        this.mMapper = new ObjectMapper();
+
         ButterKnife.bind(this);
 
         this.token = getIntent().getParcelableExtra("token");
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        AdvisorAppApplication app = (AdvisorAppApplication) getApplication();
-        this.mRequestQueue = app.getmVolleyRequestQueue();
-        this.mMapper = new ObjectMapper();
 
-        new Thread(new Runnable() {
-
-            @Override
+        this.runOnUiThread(new Runnable() {
             public void run() {
-                StudyPlanListActivity.this.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        new DownloadStudyPlansTask().doInBackground();
-                    }
-                });
+                getUser();
             }
-        }).start();
+        });
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -112,7 +114,7 @@ public class StudyPlanListActivity extends AppCompatActivity
                             return;
 
                         parameter.put("name", name);
-                        postStudyPlanList(parameter, 1);
+                        postStudyPlanList(parameter);
                     }
                 })
                 .show();
@@ -145,7 +147,7 @@ public class StudyPlanListActivity extends AppCompatActivity
 
         @Override
         protected Boolean doInBackground(String... params) {
-            getStudyPlanList(1);
+            getStudyPlanList();
             return true;
         }
 
@@ -164,7 +166,7 @@ public class StudyPlanListActivity extends AppCompatActivity
         protected Boolean doInBackground(String... params) {
             HashMap<String, String> parameters = new HashMap<>();
             parameters.put("name", params[0]);
-            postStudyPlanList(parameters, Long.getLong(params[1]));
+            postStudyPlanList(parameters);
             return true;
         }
 
@@ -185,7 +187,6 @@ public class StudyPlanListActivity extends AppCompatActivity
 
         @Override
         protected Boolean doInBackground(String... params) {
-            Log.d("dddd", params[0]);
             deleteStudyPlan(Long.parseLong(params[0]));
             return true;
         }
@@ -195,8 +196,8 @@ public class StudyPlanListActivity extends AppCompatActivity
         }
     }
 
-    public void deleteStudyPlan(final long studyPlanId) {
-        JsonObjectRequest myRequest = APIHelper.deleteStudyPlan(this.token, studyPlanId,
+   /* public void deleteStudyPlan(final long studyPlanId) {
+        StringRequest myRequest = APIHelper.deleteStudyPlan(this.token, studyPlanId,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -206,6 +207,7 @@ public class StudyPlanListActivity extends AppCompatActivity
                                 break;
                             }
                         }
+                        Log.d(TAG, "A supprimer " + studyPlanId );
                         mStudyPlanListAdapter.notifyDataSetChanged();
                     }
                 },
@@ -214,13 +216,67 @@ public class StudyPlanListActivity extends AppCompatActivity
                     public void onErrorResponse(VolleyError error) {
                         Log.d("Error.Response", error.toString());
                     }
-                });
+                })
         mRequestQueue.add(myRequest);
 
+    }*/
+
+    private void deleteStudyPlan(final long studyPlanId){
+Log.d(TAG, API.URL + "studyPlans/" + studyPlanId);
+        StringRequest postRequest = new StringRequest(Request.Method.DELETE, API.URL + "studyPlans/" + studyPlanId,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.d("Response", response);
+                        for(int i = 0; i < studyPlans.size(); i++){
+                            if (studyPlans.get(i).getId() == studyPlanId){
+                                studyPlans.remove(i);
+                                break;
+                            }
+                        }
+                        Log.d(TAG, "A supprimer " + studyPlanId );
+                        mStudyPlanListAdapter.notifyDataSetChanged();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        Log.d("Error.Response", error.toString());
+                    }
+                }
+        ) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=UTF-8";
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    return mapper.writeValueAsString(user).getBytes();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                if(token != null) headers.put("X-Authorization", token.getToken());
+                return headers;
+            }
+
+        };
+        mRequestQueue.add(postRequest);
     }
 
-    private void getStudyPlanList(long userId) {
-        JsonArrayRequest myRequest = APIHelper.getStudyPlans(this.token, userId,
+    private void getStudyPlanList() {
+        JsonArrayRequest myRequest = APIHelper.getStudyPlans(this.token, user.getId(),
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -254,14 +310,14 @@ public class StudyPlanListActivity extends AppCompatActivity
 
     }
 
-    private void postStudyPlanList(HashMap<String, String> parameters, final long userId) {
-        JsonObjectRequest myRequest = APIHelper.postStudyPlan(this.token, parameters, userId,
+    private void postStudyPlanList(HashMap<String, String> parameters) {
+        JsonObjectRequest myRequest = APIHelper.postStudyPlan(this.token, parameters, user.getId(),
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("Response", response.toString());
                         studyPlans.clear();
-                        getStudyPlanList(userId);
+                        getStudyPlanList();
                     }
                 },
                 new Response.ErrorListener() {
@@ -272,5 +328,56 @@ public class StudyPlanListActivity extends AppCompatActivity
                 });
         mRequestQueue.add(myRequest);
 
+    }
+
+    public void startSemesterActivity(StudyPlan studyPlan){
+        Intent intent = new Intent(getApplicationContext(), SemestersActivity.class);
+        intent.putExtra("token", token);
+        intent.putExtra("studyPlan", studyPlan);
+        Log.d(TAG, studyPlan.getId() + studyPlan.getName());
+        startActivity(intent);
+    }
+
+    private class getSemesterTask extends AsyncTask<Long, Long, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            getStudyPlanList();
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+
+        }
+    }
+
+    public void getUser() {
+        JsonObjectRequest myRequest = APIHelper.getHello(this.token,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            user = mMapper.readValue(response.toString(), User.class);
+                            Log.d(TAG, "response");
+                            new getSemesterTask().doInBackground();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("Error.Response", error.toString());
+                    }
+                });
+        mRequestQueue.add(myRequest);
     }
 }

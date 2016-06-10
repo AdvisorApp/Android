@@ -1,6 +1,5 @@
 package com.advisorapp.view.activities.uv;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +13,6 @@ import com.advisorapp.AdvisorAppApplication;
 import com.advisorapp.R;
 import com.advisorapp.api.APIHelper;
 import com.advisorapp.api.Token;
-import com.advisorapp.listeners.RecyclerItemClickListener;
 import com.advisorapp.model.Semester;
 import com.advisorapp.model.StudyPlan;
 import com.advisorapp.model.Uv;
@@ -25,14 +23,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;

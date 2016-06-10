@@ -33,7 +33,9 @@ public class StudyPlanListAdapter extends RecyclerView.Adapter<StudyPlanListHold
     @Override
     public StudyPlanListHolder onCreateViewHolder(ViewGroup viewGroup, int itemType) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.activity_studyplan,viewGroup,false);
-        return new StudyPlanListHolder(view);
+        StudyPlanListHolder holder = new StudyPlanListHolder(view);
+
+        return holder;
     }
 
     @Override
@@ -67,6 +69,13 @@ public class StudyPlanListAdapter extends RecyclerView.Adapter<StudyPlanListHold
                 return true;
             }
 
+        });
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    activity.startSemesterActivity(studyPlan);
+                }
         });
     }
 
