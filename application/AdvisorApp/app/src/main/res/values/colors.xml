@@ -11,4 +11,8 @@
 
     <color name="text_lgray">#808080</color>
     <color name="text_gray">#323232</color>
+    
+    <color name="university">#99CC00</color>
+    <color name="college">#FFCC00</color>
+    <color name="department">#FF98CB</color>
 </resources>
