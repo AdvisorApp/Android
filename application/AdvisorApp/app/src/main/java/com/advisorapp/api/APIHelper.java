@@ -63,4 +63,9 @@ public class APIHelper {
         return new AbstractJsonObjectRequest(token, Request.Method.DELETE, url,  null, listener, errorListener);
     }
 
+    public static AbstractJsonArrayRequest getUvUsers(Token token, long userId, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener){
+        String url = API.URL + API.UV_ROUTE + userId + API.UV_USER;
+        return new AbstractJsonArrayRequest(token, url, listener, errorListener);
+    }
+
 }

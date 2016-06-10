@@ -15,6 +15,13 @@ public class UvUser {
 
     private String uvComment;
 
+    public void setTeacherComment(String teacherComment) {
+        this.teacherComment = teacherComment;
+    }
+
+    private String teacherComment;
+
+
     public long getId() {
         return id;
     }
@@ -57,5 +64,10 @@ public class UvUser {
 
     public void setUvComment(String uvComment) {
         this.uvComment = uvComment;
+    }
+
+    public String getTeacherComment() {
+
+        return teacherComment;
     }
 }
