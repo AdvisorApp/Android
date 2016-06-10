@@ -118,7 +118,7 @@ public class SemestersFragment extends Fragment{
     private TreeNode.TreeNodeClickListener nodeClickListener = new TreeNode.TreeNodeClickListener() {
         @Override
         public void onClick(TreeNode node, Object value) {
-            if(node.isLeaf()){
+            if(node.isLeaf() && node.getLevel()>1){
                 Log.d("hey", "ho");
                 UVHolder.UvItem item = (UVHolder.UvItem) value;
 
@@ -136,7 +136,7 @@ public class SemestersFragment extends Fragment{
     private TreeNode.TreeNodeLongClickListener nodeLongClickListener = new TreeNode.TreeNodeLongClickListener() {
         @Override
         public boolean onLongClick(TreeNode node, Object value) {
-            if (node.isLeaf()){
+            if (node.isLeaf() && node.getLevel()>1){
                 Uv uv = ((UVHolder.UvItem) value).uv;
                 new MaterialDialog.Builder(getActivity())
                         .title("Remove UV")
