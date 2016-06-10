@@ -15,6 +15,16 @@ public class Semester {
 
     private Set<Uv> uvs;
 
+    private int totalChs;
+
+    public int getTotalChs() {
+        return totalChs;
+    }
+
+    public void setTotalChs(int totalChs) {
+        this.totalChs = totalChs;
+    }
+
     public Set<Uv> getUvs() {
         return this.uvs;
     }
@@ -45,5 +55,9 @@ public class Semester {
 
     public void setUvs(Set<Uv> uvs) {
         this.uvs = uvs;
+    }
+
+    public String toString(){
+        return "Semester " + this.number;
     }
 }

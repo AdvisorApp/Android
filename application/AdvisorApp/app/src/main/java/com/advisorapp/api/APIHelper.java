@@ -4,6 +4,7 @@ import com.advisorapp.api.requests.AbstractJsonArrayRequest;
 import com.advisorapp.api.requests.AbstractJsonObjectRequest;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.toolbox.JsonArrayRequest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,4 +29,18 @@ public class APIHelper {
         return new AbstractJsonArrayRequest(token, url, listener, errorListener);
     }
 
+    public static AbstractJsonArrayRequest getCoRequisiteUvs(Token token, long uvId, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
+        String url = API.URL + "uvs/" + uvId + "/corequisites";
+        return new AbstractJsonArrayRequest(token, url, listener, errorListener);
+    }
+
+    public static AbstractJsonArrayRequest getSemesterOfSP(Token token, long studyPlanId, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener) {
+        String url = API.URL + "studyPlans/" + studyPlanId + "/semesters";
+        return new AbstractJsonArrayRequest(token, url, listener, errorListener);
+    }
+
+    public static AbstractJsonArrayRequest addUvToSemester(Token token, long semesterId, long uvId, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener){
+        String url = API.URL + "semesters/" + semesterId + "/uv/" + uvId;
+        return new AbstractJsonArrayRequest(token, Request.Method.PUT, url,  null, listener, errorListener);
+    }
 }
