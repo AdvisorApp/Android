@@ -42,6 +42,7 @@ public class APIHelper {
         String url = API.URL + "semesters/" + semesterId + "/uv/" + uvId;
         return new AbstractJsonArrayRequest(token, Request.Method.PUT, url,  null, listener, errorListener);
     }
+
     public static AbstractJsonArrayRequest getStudyPlans(Token token, long userId, Response.Listener<JSONArray> listener, Response.ErrorListener errorListener){
         String url = API.USER + userId + API.STUDY_PLANS;
         return new AbstractJsonArrayRequest(token, url, listener, errorListener);

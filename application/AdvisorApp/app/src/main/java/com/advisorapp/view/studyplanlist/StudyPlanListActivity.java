@@ -43,7 +43,6 @@ import butterknife.OnClick;
 
 public class StudyPlanListActivity extends AppCompatActivity
 {
-
     private static final String TAG = "StudyPlanListActivity";
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mStudyPlanListAdapter;
@@ -132,13 +131,11 @@ public class StudyPlanListActivity extends AppCompatActivity
         super.onStop();
     }
 
-
     @Override
     public void onBackPressed() {
         // disable going back to the MainActivity
         moveTaskToBack(true);
     }
-
 
     private class DownloadStudyPlansTask extends AsyncTask<String, String, Boolean> {
 
@@ -235,7 +232,6 @@ public class StudyPlanListActivity extends AppCompatActivity
                                 mStudyPlanListAdapter.notifyDataSetChanged();
 
                             }
-
 
                         } catch (JSONException e) {
                             e.printStackTrace();
