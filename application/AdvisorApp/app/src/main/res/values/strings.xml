@@ -459,5 +459,6 @@
     <string name="positive">Ok</string>
     <string name="negative">Cancel</string>
     <string name="new_studyplan_name">Name</string>
+    <string name="uv_description_title">Description</string>
 
 </resources>
