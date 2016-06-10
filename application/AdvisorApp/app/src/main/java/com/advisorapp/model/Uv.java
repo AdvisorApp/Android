@@ -26,6 +26,16 @@ public class Uv implements Parcelable{
 
     private Location location;
 
+    public Uv(String remoteId, String name, String description, int minSemester, boolean availableForCart, double chs, Location location) {
+        this.remoteId = remoteId;
+        this.name = name;
+        this.description = description;
+        this.minSemester = minSemester;
+        this.availableForCart = availableForCart;
+        this.chs = chs;
+        this.location = location;
+    }
+
     private UvType uvType;
 
     private ArrayList<Uv> prerequisitesUv;

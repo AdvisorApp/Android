@@ -27,6 +27,7 @@
         <activity android:name=".view.activities.uv.RemainingUvListActivity" android:theme="@style/AppTheme" />
         <activity android:name=".view.activities.uv.UvDetailActivity" android:theme="@style/AppTheme" />
         <activity android:name=".view.activities.uv.AddUvActivity" android:theme="@style/AppTheme" />
+        <activity android:name=".view.semesters.SemestersActivity" android:theme="@style/AppTheme" />
     </application>
 
 </manifest>
