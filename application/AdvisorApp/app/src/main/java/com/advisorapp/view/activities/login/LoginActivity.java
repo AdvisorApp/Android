@@ -1,6 +1,5 @@
 package com.advisorapp.view.activities.login;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
